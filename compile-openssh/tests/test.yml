@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - openssh
+
+  tasks:
+    - action:
+      shell: uname
+      register: os_name
+      debug:
+        var: os_name
+    - fail:
+      msg: OS not supported
+      when: os_name != "Darwin" || "Linux"
+
+    - action:
+      uri:
+        url: https://{{ cdn_host }}/
+        return_content: yes
+      register: website
+    - fail:
+        msg: 'Package not Available'
+      when: "{{ openssh_version }}.tar.gz not in website.content"
+    
+    - action:
+      command: which tar
+      register: command_result
+      debug:
+        var: command_result
+    - fail:
+        msg: tar is not installed
+      when: command_result != true
