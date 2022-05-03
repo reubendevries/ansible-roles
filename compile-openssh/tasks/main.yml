@@ -34,5 +34,5 @@
 
 - name: restart sshd
   service:
-    name: ssh
+    name: sshd
     state: restart
