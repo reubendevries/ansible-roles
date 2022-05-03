@@ -1,0 +1,38 @@
+---
+# tasks file for .
+
+- name: Get OpenSSH
+  get_url:
+    url: https://{{ cdn_host }}/{{ openssh_version }}.tar.gz
+    dest: /tmp
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    mode: 0644
+
+- name: extract openssh tarball
+  unarchive:
+    src: /tmp/openssh-9.0p1.tar.gz
+    dest: /tmp
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    mode: 0644
+  when: openssh_source.changed
+  register: openssh_source_unpack
+
+- name: move into /tmp/{{ openssh_version }}
+  shell:
+    chdir: /tmp/{{ openssh_version }}
+
+- name: configure source code
+  command: "configure --prefix={{ openssh_install_path }}"
+  when: openssh_source_unpack|changed
+  register: openssh_configure
+
+- name: make and install
+  command: make && make install
+  when: openssh_configure|changed
+
+- name: restart sshd
+  service:
+    name: ssh
+    state: restart

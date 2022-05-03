@@ -1,0 +1,7 @@
+---
+# vars file for ansible compile openssh
+cdn_host: cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable
+openssh_version: openssh-9.0p1
+owner: root
+group: wheel
+openssh_install_path: /usr/local
